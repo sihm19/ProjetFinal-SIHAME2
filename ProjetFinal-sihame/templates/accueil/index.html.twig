@@ -1,20 +1,26 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello AcueilController!{% endblock %}
+{% block title %}Accueil{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<div class="hero">
+    <div class="hero-content">
+        <h1>Are you <span class="highlight">starving?</span></h1>
+        <p>Within a few clicks, find meals that are accessible near you</p>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/xampp/htdocs/docProjet-SIHAME/ProjetFinal-sihame/src/Controller/AcueilController.php</code></li>
-        <li>Your template at <code>C:/xampp/htdocs/docProjet-SIHAME/ProjetFinal-sihame/templates/acueil/index.html.twig</code></li>
-    </ul>
+        <div class="search-box">
+            <div class="toggle-buttons">
+                <button class="toggle">🚴 Delivery</button>
+                <button class="toggle active">👜 Pickup</button>
+            </div>
+            <div class="address-input">
+                <input type="text" placeholder="📍 Enter Your Address">
+                <button class="find-food">Find Food</button>
+            </div>
+        </div>
+    </div>
+    <div class="hero-image">
+        <img src="{{ asset('images/ramen.png') }}" alt="Ramen">
+    </div>
 </div>
 {% endblock %}
