@@ -25,16 +25,21 @@ class Table
     /**
      * @var Collection<int, Reservation>
      */
-    #[ORM\OneToMany(targetEntity: Reservation::class, mappedBy: 'tables')]
-    private Collection $reservation;
+    #[ORM\ManyToMany(targetEntity: Reservation::class, mappedBy: 'tables')]
+    private Collection $reservations;
 
     #[ORM\ManyToOne(inversedBy: 'tables')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Etablissement $etablissement = null;
 
+    
+
+    
+
     public function __construct()
     {
-        $this->reservation = new ArrayCollection();
+        $this->Reservation = new ArrayCollection();
+        $this->reservations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -69,16 +74,16 @@ class Table
     /**
      * @return Collection<int, Reservation>
      */
-    public function getReservation(): Collection
+    public function getReservations(): Collection
     {
-        return $this->reservation;
+        return $this->reservations;
     }
 
     public function addReservation(Reservation $reservation): static
     {
-        if (!$this->reservation->contains($reservation)) {
-            $this->reservation->add($reservation);
-            $reservation->setTables($this);
+        if (!$this->reservations->contains($reservation)) {
+            $this->reservations->add($reservation);
+            $reservation->addTable($this);
         }
 
         return $this;
@@ -86,11 +91,8 @@ class Table
 
     public function removeReservation(Reservation $reservation): static
     {
-        if ($this->reservation->removeElement($reservation)) {
-            // set the owning side to null (unless already changed)
-            if ($reservation->getTables() === $this) {
-                $reservation->setTables(null);
-            }
+        if ($this->reservations->removeElement($reservation)) {
+            $reservation->removeTable($this);
         }
 
         return $this;
@@ -107,4 +109,7 @@ class Table
 
         return $this;
     }
+
+    
+
 }

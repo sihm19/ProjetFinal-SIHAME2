@@ -25,19 +25,28 @@ class Etablissement
     #[ORM\Column(enumType: TypeEtablissement::class)]
     private ?TypeEtablissement $typeEtablissement = null;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Menu $menu = null;
+
     /**
      * @var Collection<int, Reservation>
      */
     #[ORM\OneToMany(targetEntity: Reservation::class, mappedBy: 'etablissement')]
     private Collection $reservations;
 
+    /**
+     * @var Collection<int, Table>
+     */
+    #[ORM\OneToMany(targetEntity: Table::class, mappedBy: 'etablissement')]
+    private Collection $tables;
+
     public function __construct()
     {
         $this->reservations = new ArrayCollection();
+        $this->tables = new ArrayCollection();
     }
 
-
-
+ 
     public function getId(): ?int
     {
         return $this->id;
@@ -132,4 +141,36 @@ class Etablissement
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Table>
+     */
+    public function getTables(): Collection
+    {
+        return $this->tables;
+    }
+
+    public function addTable(Table $table): static
+    {
+        if (!$this->tables->contains($table)) {
+            $this->tables->add($table);
+            $table->setEtablissement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTable(Table $table): static
+    {
+        if ($this->tables->removeElement($table)) {
+            // set the owning side to null (unless already changed)
+            if ($table->getEtablissement() === $this) {
+                $table->setEtablissement(null);
+            }
+        }
+
+        return $this;
+    }
+
+    
 }

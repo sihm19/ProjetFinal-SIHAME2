@@ -21,23 +21,22 @@ class Reservation
     #[ORM\Column]
     private array $statut = [];
 
-    /**
-     * @var Collection<int, Etablissement>
-     */
-    #[ORM\OneToMany(targetEntity: Etablissement::class, mappedBy: 'reservation')]
-    private Collection $etablissements;
-
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Etablissement $etablissement = null;
 
-    #[ORM\ManyToOne(inversedBy: 'reservation')]
-    #[ORM\JoinColumn(nullable: false)]
-  
+    /**
+     * @var Collection<int, Table>
+     */
+    #[ORM\ManyToMany(targetEntity: Table::class, inversedBy: 'reservations')]
+    private Collection $tables;
+
+
 
     public function __construct()
     {
         $this->etablissements = new ArrayCollection();
+        $this->tables = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -69,48 +68,6 @@ class Reservation
         return $this;
     }
 
-    /**
-     * @return Collection<int, Etablissement>
-     */
-    public function getEtablissements(): Collection
-    {
-        return $this->etablissements;
-    }
-
-    public function addEtablissement(Etablissement $etablissement): static
-    {
-        if (!$this->etablissements->contains($etablissement)) {
-            $this->etablissements->add($etablissement);
-            $etablissement->setReservation($this);
-        }
-
-        return $this;
-    }
-
-    public function removeEtablissement(Etablissement $etablissement): static
-    {
-        if ($this->etablissements->removeElement($etablissement)) {
-            // set the owning side to null (unless already changed)
-            if ($etablissement->getReservation() === $this) {
-                $etablissement->setReservation(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function getTables(): ?Table
-    {
-        return $this->tables;
-    }
-
-    public function setTables(?Table $tables): static
-    {
-        $this->tables = $tables;
-
-        return $this;
-    }
-
     public function getEtablissement(): ?Etablissement
     {
         return $this->etablissement;
@@ -122,4 +79,29 @@ class Reservation
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Table>
+     */
+    public function getTables(): Collection
+    {
+        return $this->tables;
+    }
+
+    public function addTable(Table $table): static
+    {
+        if (!$this->tables->contains($table)) {
+            $this->tables->add($table);
+        }
+
+        return $this;
+    }
+
+    public function removeTable(Table $table): static
+    {
+        $this->tables->removeElement($table);
+
+        return $this;
+    }
+
 }
