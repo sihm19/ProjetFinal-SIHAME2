@@ -27,6 +27,10 @@ class Reservation
     #[ORM\OneToMany(targetEntity: Etablissement::class, mappedBy: 'reservation')]
     private Collection $etablissements;
 
+    #[ORM\ManyToOne(inversedBy: 'reservations')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Etablissement $etablissement = null;
+
     #[ORM\ManyToOne(inversedBy: 'reservation')]
     #[ORM\JoinColumn(nullable: false)]
   
@@ -103,6 +107,18 @@ class Reservation
     public function setTables(?Table $tables): static
     {
         $this->tables = $tables;
+
+        return $this;
+    }
+
+    public function getEtablissement(): ?Etablissement
+    {
+        return $this->etablissement;
+    }
+
+    public function setEtablissement(?Etablissement $etablissement): static
+    {
+        $this->etablissement = $etablissement;
 
         return $this;
     }
