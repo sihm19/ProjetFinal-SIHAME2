@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\MenuRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MenuRepository::class)]
@@ -14,37 +16,62 @@ class Menu
     private ?int $id = null;
 
     #[ORM\Column(length: 500, nullable: true)]
-    private ?string $ImageMenu = null;
+    private ?string $plat = null;
 
-    #[ORM\ManyToOne(inversedBy: 'menus')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Etablissement $etablissement = null;
+    /**
+     * @var Collection<int, Etablissement>
+     */
+    #[ORM\OneToMany(targetEntity: Etablissement::class, mappedBy: 'menu')]
+    private Collection $etablissements;
+
+    public function __construct()
+    {
+        $this->etablissements = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getImageMenu(): ?string
+    public function getPlat(): ?string
     {
-        return $this->ImageMenu;
+        return $this->plat;
     }
 
-    public function setImageMenu(?string $ImageMenu): static
+    public function setPlat(?string $plat): static
     {
-        $this->ImageMenu = $ImageMenu;
+        $this->plat = $plat;
 
         return $this;
     }
 
-    public function getEtablissement(): ?Etablissement
+    /**
+     * @return Collection<int, Etablissement>
+     */
+    public function getEtablissements(): Collection
     {
-        return $this->etablissement;
+        return $this->etablissements;
     }
 
-    public function setEtablissement(?Etablissement $etablissement): static
+    public function addEtablissement(Etablissement $etablissement): static
     {
-        $this->etablissement = $etablissement;
+        if (!$this->etablissements->contains($etablissement)) {
+            $this->etablissements->add($etablissement);
+            $etablissement->setMenu($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEtablissement(Etablissement $etablissement): static
+    {
+        if ($this->etablissements->removeElement($etablissement)) {
+            // set the owning side to null (unless already changed)
+            if ($etablissement->getMenu() === $this) {
+                $etablissement->setMenu(null);
+            }
+        }
 
         return $this;
     }

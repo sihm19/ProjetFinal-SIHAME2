@@ -4,9 +4,6 @@ namespace App\Entity;
 
 use App\Enum\TypeEtablissement;
 use App\Repository\EtablissementRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EtablissementRepository::class)]
@@ -18,37 +15,15 @@ class Etablissement
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $Nom = null;
+    private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
     private ?string $adresse = null;
 
-    #[ORM\Column(type: Types::SIMPLE_ARRAY, enumType: TypeEtablissement::class)]
-    private array $TypeEtablissement = [];
+    #[ORM\Column(enumType: TypeEtablissement::class)]
+    private ?TypeEtablissement $typeEtablissement = null;
 
-    #[ORM\ManyToOne(inversedBy: 'etablissements')]
-    private ?Localisation $Localisation = null;
 
-    #[ORM\Column(length: 500)]
-    private ?string $Menu = null;
-
-    /**
-     * @var Collection<int, Menu>
-     */
-    #[ORM\OneToMany(targetEntity: Menu::class, mappedBy: 'etablissement')]
-    private Collection $menus;
-
-    /**
-     * @var Collection<int, Table>
-     */
-    #[ORM\OneToMany(targetEntity: Table::class, mappedBy: 'etablissement')]
-    private Collection $tables;
-
-    public function __construct()
-    {
-        $this->menus = new ArrayCollection();
-        $this->tables = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -57,12 +32,12 @@ class Etablissement
 
     public function getNom(): ?string
     {
-        return $this->Nom;
+        return $this->nom;
     }
 
-    public function setNom(string $Nom): static
+    public function setNom(string $nom): static
     {
-        $this->Nom = $Nom;
+        $this->nom = $nom;
 
         return $this;
     }
@@ -79,91 +54,39 @@ class Etablissement
         return $this;
     }
 
-    /**
-     * @return TypeEtablissement[]
-     */
-    public function getTypeEtablissement(): array
+    public function getTypeEtablissement(): ?TypeEtablissement
     {
-        return $this->TypeEtablissement;
+        return $this->typeEtablissement;
     }
 
-    public function setTypeEtablissement(array $TypeEtablissement): static
+    public function setTypeEtablissement(TypeEtablissement $typeEtablissement): static
     {
-        $this->TypeEtablissement = $TypeEtablissement;
+        $this->typeEtablissement = $typeEtablissement;
 
         return $this;
     }
 
-    public function getLocalisation(): ?Localisation
+    public function getMenu(): ?Menu
     {
-        return $this->Localisation;
+        return $this->menu;
     }
 
-    public function setLocalisation(?Localisation $Localisation): static
+    public function setMenu(?Menu $menu): static
     {
-        $this->Localisation = $Localisation;
+        $this->menu = $menu;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Menu>
-     */
-    public function getMenus(): Collection
+    public function getReservation(): ?Reservation
     {
-        return $this->menus;
+        return $this->reservation;
     }
 
-    public function addMenu(Menu $menu): static
+    public function setReservation(?Reservation $reservation): static
     {
-        if (!$this->menus->contains($menu)) {
-            $this->menus->add($menu);
-            $menu->setEtablissement($this);
-        }
+        $this->reservation = $reservation;
 
         return $this;
     }
-
-    public function removeMenu(Menu $menu): static
-    {
-        if ($this->menus->removeElement($menu)) {
-            // set the owning side to null (unless already changed)
-            if ($menu->getEtablissement() === $this) {
-                $menu->setEtablissement(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Table>
-     */
-    public function getTables(): Collection
-    {
-        return $this->tables;
-    }
-
-    public function addTable(Table $table): static
-    {
-        if (!$this->tables->contains($table)) {
-            $this->tables->add($table);
-            $table->setEtablissement($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTable(Table $table): static
-    {
-        if ($this->tables->removeElement($table)) {
-            // set the owning side to null (unless already changed)
-            if ($table->getEtablissement() === $this) {
-                $table->setEtablissement(null);
-            }
-        }
-
-        return $this;
-    }
-
 }

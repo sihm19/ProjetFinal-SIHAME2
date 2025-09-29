@@ -1,26 +1,7 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil{% endblock %}
+{% block title %}Hello AccueilController!{% endblock %}
 
 {% block body %}
-<div class="hero">
-    <div class="hero-content">
-        <h1>Are you <span class="highlight">starving?</span></h1>
-        <p>Within a few clicks, find meals that are accessible near you</p>
-
-        <div class="search-box">
-            <div class="toggle-buttons">
-                <button class="toggle">🚴 Delivery</button>
-                <button class="toggle active">👜 Pickup</button>
-            </div>
-            <div class="address-input">
-                <input type="text" placeholder="📍 Enter Your Address">
-                <button class="find-food">Find Food</button>
-            </div>
-        </div>
-    </div>
-    <div class="hero-image">
-        <img src="{{ asset('images/ramen.png') }}" alt="Ramen">
-    </div>
-</div>
+<h1>Bienvenue au site!</h1>
 {% endblock %}

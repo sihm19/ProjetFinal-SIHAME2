@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TableRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TableRepository::class)]
@@ -15,55 +17,81 @@ class Table
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?int $NbDePlace = null;
+    private ?bool $EstReservee = null;
 
     #[ORM\Column]
-    private ?bool $EstReserve = null;
+    private ?int $NbPlace = null;
 
-    #[ORM\Column]
-    private ?int $NombreTable = null;
+    /**
+     * @var Collection<int, Reservation>
+     */
+    #[ORM\OneToMany(targetEntity: Reservation::class, mappedBy: 'tables')]
+    private Collection $reservation;
 
     #[ORM\ManyToOne(inversedBy: 'tables')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Etablissement $etablissement = null;
+
+    public function __construct()
+    {
+        $this->reservation = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getNbDePlace(): ?int
+    public function isEstReservee(): ?bool
     {
-        return $this->NbDePlace;
+        return $this->EstReservee;
     }
 
-    public function setNbDePlace(int $NbDePlace): static
+    public function setEstReservee(bool $EstReservee): static
     {
-        $this->NbDePlace = $NbDePlace;
+        $this->EstReservee = $EstReservee;
 
         return $this;
     }
 
-    public function isEstReserve(): ?bool
+    public function getNbPlace(): ?int
     {
-        return $this->EstReserve;
+        return $this->NbPlace;
     }
 
-    public function setEstReserve(bool $EstReserve): static
+    public function setNbPlace(int $NbPlace): static
     {
-        $this->EstReserve = $EstReserve;
+        $this->NbPlace = $NbPlace;
 
         return $this;
     }
 
-    public function getNombreTable(): ?int
+    /**
+     * @return Collection<int, Reservation>
+     */
+    public function getReservation(): Collection
     {
-        return $this->NombreTable;
+        return $this->reservation;
     }
 
-    public function setNombreTable(int $NombreTable): static
+    public function addReservation(Reservation $reservation): static
     {
-        $this->NombreTable = $NombreTable;
+        if (!$this->reservation->contains($reservation)) {
+            $this->reservation->add($reservation);
+            $reservation->setTables($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReservation(Reservation $reservation): static
+    {
+        if ($this->reservation->removeElement($reservation)) {
+            // set the owning side to null (unless already changed)
+            if ($reservation->getTables() === $this) {
+                $reservation->setTables(null);
+            }
+        }
 
         return $this;
     }

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ReservationRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
@@ -14,36 +16,93 @@ class Reservation
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?\DateTime $Date = null;
+    private ?\DateTime $dateHeure = null;
 
     #[ORM\Column]
-    private ?int $NombrePersonne = null;
+    private array $statut = [];
+
+    /**
+     * @var Collection<int, Etablissement>
+     */
+    #[ORM\OneToMany(targetEntity: Etablissement::class, mappedBy: 'reservation')]
+    private Collection $etablissements;
+
+    #[ORM\ManyToOne(inversedBy: 'reservation')]
+    #[ORM\JoinColumn(nullable: false)]
+  
+
+    public function __construct()
+    {
+        $this->etablissements = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getDate(): ?\DateTime
+    public function getDateHeure(): ?\DateTime
     {
-        return $this->Date;
+        return $this->dateHeure;
     }
 
-    public function setDate(\DateTime $Date): static
+    public function setDateHeure(\DateTime $dateHeure): static
     {
-        $this->Date = $Date;
+        $this->dateHeure = $dateHeure;
 
         return $this;
     }
 
-    public function getNombrePersonne(): ?int
+    public function getStatut(): array
     {
-        return $this->NombrePersonne;
+        return $this->statut;
     }
 
-    public function setNombrePersonne(int $NombrePersonne): static
+    public function setStatut(array $statut): static
     {
-        $this->NombrePersonne = $NombrePersonne;
+        $this->statut = $statut;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Etablissement>
+     */
+    public function getEtablissements(): Collection
+    {
+        return $this->etablissements;
+    }
+
+    public function addEtablissement(Etablissement $etablissement): static
+    {
+        if (!$this->etablissements->contains($etablissement)) {
+            $this->etablissements->add($etablissement);
+            $etablissement->setReservation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEtablissement(Etablissement $etablissement): static
+    {
+        if ($this->etablissements->removeElement($etablissement)) {
+            // set the owning side to null (unless already changed)
+            if ($etablissement->getReservation() === $this) {
+                $etablissement->setReservation(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getTables(): ?Table
+    {
+        return $this->tables;
+    }
+
+    public function setTables(?Table $tables): static
+    {
+        $this->tables = $tables;
 
         return $this;
     }
